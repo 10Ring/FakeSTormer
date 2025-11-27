@@ -1,0 +1,204 @@
+TASK: C23_ResNet3D224_hm10_256CST100_EFPN_C2_32SBI_AdamW_temp2_0.25_normlms_1e7_mstd
+PRECISION: float64
+METRICS_BASE: binary
+SEED: 317
+DATA_RELOAD: True
+
+DATASET:
+  type: FakeSFormerSBI
+  DATA_TYPE: video
+  TRAIN: True #Switch to True for training mode, False for testing mode
+  COMPRESSION: c23
+  IMAGE_SUFFIX: png
+  NUM_WORKERS: 32
+  PIN_MEMORY: True
+  IMAGE_SIZE: [224, 224]
+  HEATMAP_SIZE: [56, 56] #[IMAGE_SIZE//4, IMAGE_SIZE//4]
+  SIGMA: 1
+  ADAPTIVE_SIGMA: False
+  HEATMAP_TYPE: m_std_normalized
+  SPLIT_IMAGE: False
+  DATA:
+    TYPE: videos
+    SAMPLES_PER_VIDEO: 
+      ACTIVE: True
+      TRAIN: 32 # Dynamically random number of frames in each epoch
+      VAL: 32
+      TEST: 32
+      NUM_FRAMES: 32
+    TRAIN:
+      NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c23/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      FROM_FILE: True
+      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # ANNO_FILE: train/frames/FaceXRay/train_FF_FaceXRay.json
+      ANNO_FILE: processed_data/c23/train_FaceForensics_videos_81.json
+      LABEL_FOLDER: [real, fake]
+    VAL:
+      NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c23/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      FROM_FILE: True
+      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures] # Choosing Deepfake techniques to be loaded for dataloader
+      # ANNO_FILE: val/frames/FaceXRay/val_FF_FaceXRay.json
+      ANNO_FILE: processed_data/c23/val_FaceForensics_videos_81.json
+      LABEL_FOLDER: [real, fake]
+    TEST:
+      NAME: Celeb-DFv2
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c23/
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      # ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /home/users/XXX/data/Celeb-DFv1/
+      # ROOT: /project/home/p200249/XXX/Celeb-DFv1/
+      # ROOT: /data/deepfake_cluster/datasets_df/Celeb-DFv1/
+      # ROOT: /home/users/XXX/data/Celeb-DFv2/
+      ROOT: /project/home/p200249/XXX/Celeb-DFv2/
+      # ROOT: /data/deepfake_cluster/datasets_df/Celeb-DFv2/
+      # ROOT: /home/users/XXX/data/DFDCP/
+      # ROOT: /project/home/p200249/XXX/DFDCP/
+      # ROOT: /data/deepfake_cluster/datasets_df/DFDCP/
+      # ROOT: /home/users/XXX/data/DFDC/
+      # ROOT: /project/home/p200249/XXX/DFDC/
+      # ROOT: /data/deepfake_cluster/datasets_df/DFDC/
+      # ROOT: /home/users/XXX/data/DFD/
+      # ROOT: /project/home/p200249/XXX/DFD/
+      # ROOT: /data/deepfake_cluster/datasets_df/DFD/
+      # ROOT: /home/users/XXX/data/DFW/
+      # ROOT: /project/home/p200249/XXX/DFW/
+      # ROOT: /data/deepfake_cluster/datasets_df/DFW/
+      # ROOT: /project/home/p200249/XXX/DeeperForensics/
+      FROM_FILE: False
+      # FAKETYPE: [original, Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # FAKETYPE: [original, FaceShifter]
+      # FAKETYPE: [videos_BW_5/original, videos_BW_5/Deepfakes, videos_BW_5/Face2Face, videos_BW_5/FaceSwap, videos_BW_5/NeuralTextures]
+      FAKETYPE: [Celeb-real, Celeb-synthesis, YouTube-real]
+      # FAKETYPE: [method_A, method_B, original_videos]
+      # FAKETYPE: [fake_method, real_method]
+      # FAKETYPE: [DeepFakeDetection_original, DeepFakeDetection]
+      # FAKETYPE: [fake_test, real_test]
+      # FAKETYPE: [DFo_source_videos, DFo_manipulated_videos]
+      ANNO_FILE: FaceXRay/test/test_FF_Xray.json
+      LABEL_FOLDER: [real, fake]
+  TRANSFORM:
+    geometry:
+      type: GeometryTransform
+      resize: [224, 224, 0] #h, w, p=probability. If no affine transform, set p=1
+      normalize: 0
+      horizontal_flip: 0.5
+      cropping: [0.15, 0.] #Format: [crop_limit, prob]
+      scale: [0.15, 0.] #Format: [scale_limit, prob]
+      rand_erasing: [0.0, 1] #Format: [p, max_count]
+    color:
+      type: ColorJitterTransform
+      clahe: 0.0
+      colorjitter: 0.3
+      gaussianblur: 0.3
+      gaussnoise: 0.3
+      jpegcompression: [0.5, 40, 100] # prob, lower and upper quality respectively
+      rgbshift: 0.3
+      randomcontrast: 0.0
+      randomgamma: 0.5
+      randombrightness: 1
+      huesat: 1
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+  DEBUG: False
+  DYNAMIC_FXRAY: True
+  DYNAMIC_BLENDING_PROB: True # Normally only use for temporal modeling
+  TARGET_OVERLAP: True
+  MASK_PROB: 0.
+  TEMP_MASKOUT: False
+
+MODEL:
+  type: TopDownDetector
+  backbone:
+    type: ResNet3D
+    block: Bottleneck
+    layers: [3, 4, 6, 3]
+    block_inplanes: [64, 128, 256, 512]
+  neck:
+    type: EFPN3D
+    in_channels: 2048
+    num_deconv_layers: 4 #Config n deconv layers to build the decoder
+    num_deconv_filters: [1024, 512, 256, 128]
+    num_deconv_kernels: [[4,4,4], [4,4,4], [4,4,4], [4,1,1]]
+    num_deconv_strides: [[2,2,2], [2,2,2], [2,2,2], [2,1,1]]
+    efpn: True
+  keypoint_head:
+    type: TopdownHeatmapSimpleHead
+    in_channels: 128
+    heads:
+      cls: 1
+      hm: 1
+      cstency: 128
+    loss_keypoint: 
+        type: JointsMSELoss 
+        use_target_weight: False
+    extra: 
+      final_conv_kernel: 3
+      num_conv_layers: 1
+    conv_2direction: False
+    use_temp_token: True
+    features: 3D
+    avg_pool: True
+    act: RELU
+  INIT_WEIGHTS:
+    pretrained: pretrained/r3d50_KS_200ep.pth
+
+TRAIN:
+  gpus: [0,1,2,3]
+  batch_size: 4
+  lr: 0.0000001
+  epochs: 200
+  begin_epoch: -1
+  warm_up: 10
+  every_val_epochs: 1
+  accumulation_steps: 4
+  use_amp: True
+  loss:
+    type: CombinedMSELoss
+    use_target_weight: False
+    cls_lmda: 1
+    dst_hm_cls_lmda: 0
+    offset_lmda: 0
+    hm_lmda: 10
+    cstency_lmda: 100
+    tmp_loc_lmda: 0
+    mse_reduction: mean
+    ce_reduction: mean
+    use_ce: False
+    feature: 3D
+    temperature: 2
+  optimizer: AdamW
+  distributed: False
+  pretrained: ''
+  tensorboard: False
+  resume: False
+  lr_scheduler:
+    # type: MultiStepLR
+    milestones: [5, 15, 20, 25]
+    gamma: 0.5
+  freeze_backbone: True
+  debug:
+    active: False
+    save_hm_gt: True
+    save_hm_pred: True
+  booster: 500
+  start_decay: 4
+
+TEST:
+  gpus: [0]
+  subtask: 'eval'
+  test_file: ''
+  vis_hm: True
+  threshold: 0.5
+  flip_test: False
+  video_level: True
+  no_shot_preds: 1
+  pretrained: 'logs/30-09-2024/TopDownDetector_C23_Res3D224_hm0_tempLOC0_8SBI_Adam_mp0.01_temp1_0vidAug_0.35_normlms_SBV_ablation_model_best.pth'
