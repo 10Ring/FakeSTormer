@@ -5,7 +5,6 @@ This is an official implementation of FakeSTormer! [[📜Paper](https://openacce
 
 
 ## Updates
-- [ ] *-/-/- : Code refactor 🚀.*
 - [x] 26/11/2025:*Official release of code (v1) and pretrained weights 🌈.*
 - [x] 08/07/2025: *First version pre-released for this open source code 🌱.*
 - [x] 26/06/2025: *FakeSTormer has been accepted to ICCV2025 🎉.*
@@ -24,7 +23,7 @@ Results on 6 datasets ([CDF2](https://github.com/yuezunli/celeb-deepfakeforensic
 
 
 ## Recommended Environment
-*For experiment purposes, we encourage the installment of the following libraries. Both Conda or Python virtual env should work.*
+*For experimental purposes, we encourage the installation of the following libraries. Both Conda or Python virtual env should work.*
 
 * CUDA: 11.4
 * [Python](https://www.python.org/): >= 3.8.x
@@ -154,9 +153,9 @@ Results on 6 datasets ([CDF2](https://github.com/yuezunli/celeb-deepfakeforensic
     ```
     .scripts/test_fakestormer.sh
     ```
-    For others (.e.g., data compression levels, network architectures), please change the path of the coressponding config file.
+    For others (.e.g., data compression levels, network architectures), please change the path of the corresponding config file.
 
-    > ⚠️ *Please make sure you set the correct path to your download pre-trained weights in the config files.*
+    > ⚠️ *Please make sure you set the correct path to your downloaded pre-trained weights in the config files.*
 
     > ℹ️ *Flip test can be used by setting ```flip_test: True```*
     
