@@ -1,11 +1,12 @@
 # [ICCV2025] [FakeSTormer] Vulnerability-Aware Spatio-Temporal Learning for Generalizable Deepfake Video Detection
 
 ![alt text](./demo/method.png?raw=true)
-This is an official implementation of FakeSTormer! [[📜Paper](https://arxiv.org/abs/2501.01184)]
+This is an official implementation of FakeSTormer! [[📜Paper](https://openaccess.thecvf.com/content/ICCV2025/papers/Nguyen_Vulnerability-Aware_Spatio-Temporal_Learning_for_Generalizable_Deepfake_Video_Detection_ICCV_2025_paper.pdf)]
 
 
 ## Updates
-- [ ] *Comming soon: Release of code and pretrained weights ⏳.*
+- [ ] *-/-/- : Code refactor 🚀.*
+- [x] 26/11/2025:*Official release of code (v1) and pretrained weights 🌈.*
 - [x] 08/07/2025: *First version pre-released for this open source code 🌱.*
 - [x] 26/06/2025: *FakeSTormer has been accepted to ICCV2025 🎉.*
 
@@ -39,7 +40,7 @@ Results on 6 datasets ([CDF2](https://github.com/yuezunli/celeb-deepfakeforensic
 
 
 ## Pre-trained Models
-* 📌 *The pre-trained weights will be released soon!*
+* 📌 *The pre-trained weights of FakeSTormer can be found [here](https://www.dropbox.com/scl/fo/elk2szqf0du4l6zm5job9/AAdVmNH--6ywHBZGNQJlR5o?rlkey=5kde7vj4wklrx1jwdul0m6g46&st=czw4szw0&dl=0)*
 
 
 ## Docker Build (Optional)
@@ -177,10 +178,11 @@ We acknowledge the excellent implementation from [OpenMMLab](https://github.com/
 ## Citation
 Please kindly consider citing our papers in your publications.
 ```
-@article{nguyen2025vulnerability,
-  title={Vulnerability-Aware Spatio-Temporal Learning for Generalizable and Interpretable Deepfake Video Detection},
+@inproceedings{nguyen2025vulnerability,
+  title={Vulnerability-Aware Spatio-Temporal Learning for Generalizable Deepfake Video Detection},
   author={Nguyen, Dat and Astrid, Marcella and Kacem, Anis and Ghorbel, Enjie and Aouada, Djamila},
-  journal={arXiv preprint arXiv:2501.01184},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={10786--10796},
   year={2025}
 }
 ```

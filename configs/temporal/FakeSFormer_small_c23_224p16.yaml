@@ -1,0 +1,194 @@
+TASK: ViTSmall224_hm100_tempLOC0.5_4SBI_DymIntens_MSE_SAM(AdamW)_mp0.01_fsdyn_fullSA_m_std_c23_0aug_newmaskdeform_test
+PRECISION: float
+METRICS_BASE: binary
+SEED: 317
+DATA_RELOAD: False
+
+DATASET:
+  type: FakeSFormerSBI
+  DATA_TYPE: video
+  TRAIN: True #Switch to True for training mode, False for testing mode
+  COMPRESSION: c23
+  IMAGE_SUFFIX: png
+  NUM_WORKERS: 32
+  PIN_MEMORY: True
+  IMAGE_SIZE: [224, 224]
+  HEATMAP_SIZE: [14, 14] #[IMAGE_SIZE//4, IMAGE_SIZE//4]
+  SIGMA: 1
+  ADAPTIVE_SIGMA: False
+  HEATMAP_TYPE: m_std_normalized
+  SPLIT_IMAGE: False
+  DATA:
+    TYPE: videos # frames or videos
+    SAMPLES_PER_VIDEO: 
+      ACTIVE: True
+      TRAIN: 4 # Dynamically random number of frames in each epoch
+      VAL: 4
+      TEST: 4
+      NUM_FRAMES: 4
+    TRAIN:
+      NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      # ROOT: /home/users/XXX/data/FaceForensics++/c23/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      FROM_FILE: True
+      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # ANNO_FILE: train/frames/FaceXRay/train_FF_FaceXRay.json
+      ANNO_FILE: processed_data/c23/train_FaceForensics_videos_81.json
+      LABEL_FOLDER: [real, fake]
+    VAL:
+      NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      # ROOT: /home/users/XXX/data/FaceForensics++/c23/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      FROM_FILE: True
+      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures] # Choosing Deepfake techniques to be loaded for dataloader
+      # ANNO_FILE: val/frames/FaceXRay/val_FF_FaceXRay.json
+      ANNO_FILE: processed_data/c23/val_FaceForensics_videos_81.json
+      LABEL_FOLDER: [real, fake]
+    TEST:
+      NAME: FF++
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /home/users/XXX/data/Celeb-DFv1/
+      # ROOT: /project/home/p200249/XXX/Celeb-DFv1/
+      # ROOT: /project/home/p200249/XXX/Celeb-DFv2/
+      # ROOT: /data/deepfake_cluster/datasets_df/Celeb-DFv1/
+      # ROOT: /home/users/XXX/data/Celeb-DFv2/
+      # ROOT: /project/home/p200249/XXX/Celeb-DFv2/
+      # ROOT: /project/home/p200328/XXX/data/DFDCP/
+      # ROOT: /project/home/p200249/XXX/DFDCP/
+      # ROOT: /home/users/XXX/data/DFDCP/
+      # ROOT: /home/users/XXX/data/DFDC/
+      # ROOT: /home/users/XXX/data/DFD/
+      # ROOT: /home/users/XXX/data/DFW/
+      # ROOT: /project/home/p200328/XXX/data/DeeperForensics/
+      FROM_FILE: False
+      FAKETYPE: [original, NeuralTextures]
+      # FAKETYPE: [original, Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # FAKETYPE: [Celeb-real, Celeb-synthesis, YouTube-real]
+      # FAKETYPE: [method_A, method_B, original_videos]
+      # FAKETYPE: [fake, real]
+      # FAKETYPE: [DeepFakeDetection_original, DeepFakeDetection]
+      # FAKETYPE: [fake_test, real_test]
+      # FAKETYPE: [DFo_source_videos, DFo_manipulated_videos]
+      ANNO_FILE: FaceXRay/test/test_FF_Xray.json
+      LABEL_FOLDER: [real, fake]
+  TRANSFORM:
+    geometry:
+      type: GeometryTransform
+      resize: [224, 224, 0] #h, w, p=probability. If no affine transform, set p=1
+      normalize: 0
+      horizontal_flip: 0
+      cropping: [0.15, 0] #Format: [crop_limit, prob]
+      scale: [0.15, 0] #Format: [scale_limit, prob]
+      rand_erasing: [0.0, 1] #Format: [p, max_count]
+    color:
+      type: ColorJitterTransform
+      clahe: 0.0
+      colorjitter: 0.3
+      gaussianblur: 0.3
+      gaussnoise: 0.3
+      jpegcompression: [0.5, 40, 100] # prob, lower and upper quality respectively
+      rgbshift: 0.3
+      randomcontrast: 0.0
+      randomgamma: 0.5
+      randombrightness: 1
+      huesat: 1
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+  DEBUG: False
+  DYNAMIC_FXRAY: True
+  DYNAMIC_BLENDING_PROB: True # Normally only use for temporal modeling
+  TARGET_OVERLAP: True
+  MASK_PROB: 0.01
+
+MODEL:
+  type: TopDownDetector
+  backbone:
+    type: TimeViT
+    img_size: [224, 224]
+    patch_size: 16
+    embed_dim: 384
+    depth: 12
+    num_heads: 6
+    mlp_ratio: 4
+    drop_path_rate: 0.3
+    qkv_bias: True
+    class_token: True
+    register_token: True
+    attention_type: divided_space_time #joint_space_time, space_only
+    num_frames: 4
+    pretrained: pretrained/dino_deitsmall16_pretrain.pth
+  keypoint_head:
+    type: TopdownHeatmapSimpleHead
+    in_channels: 384
+    hm_size: [14, 14] #img_size // patch_size
+    heads:
+      hm: 1
+      cls: 1
+      temp_loc: 4
+    num_deconv_layers: 0 #Config n deconv layers to build the decoder
+    num_deconv_filters: [256, 256]
+    num_deconv_kernels: [4, 4]
+    loss_keypoint: 
+        type: JointsMSELoss 
+        use_target_weight: False
+    extra: 
+      final_conv_kernel: 3
+      num_conv_layers: 1
+    conv_2direction: True
+    use_temp_token: True
+    features: 3D
+
+TRAIN:
+  gpus: [0,1,2,3]
+  batch_size: 16
+  lr: 0.00005
+  epochs: 100
+  begin_epoch: -1
+  warm_up: 5
+  every_val_epochs: 1
+  accumulation_steps: 1
+  loss:
+    type: CombinedMSELoss
+    use_target_weight: False
+    cls_lmda: 0.5
+    dst_hm_cls_lmda: 0
+    offset_lmda: 0
+    hm_lmda: 100
+    cstency_lmda: 0
+    tmp_loc_lmda: 0.5
+    mse_reduction: mean
+    ce_reduction: mean
+    use_ce: False
+  optimizer: SAM
+  distributed: False
+  pretrained: ''
+  tensorboard: False
+  resume: False
+  lr_scheduler:
+    # type: MultiStepLR
+    milestones: [5, 15, 20, 25]
+    gamma: 0.5
+  freeze_backbone: True
+  debug:
+    active: False
+    save_hm_gt: True
+    save_hm_pred: True
+  booster: 1
+  start_decay: 4
+
+TEST:
+  gpus: [0]
+  subtask: 'eval'
+  test_file: ''
+  vis_hm: True
+  threshold: 0.5
+  flip_test: False
+  video_level: True
+  no_shot_preds: 1
+  pretrained: 'logs/04-08-2024/TopDownDetector_ViTSmall224_hm100_tempLOC0.3_4SBI_DymIntens_MSE_SAM(AdamW)_mp0.01_fsdyn_fullSA_m_std_c23_0comp_model_best.pth'

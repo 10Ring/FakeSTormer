@@ -1,0 +1,208 @@
+TASK: ViTSmall112_hm0_8SBI_Overlap100_BCE_AdamW_IN22k_5e4_FZ5_0Cutout_abl
+PRECISION: float64
+METRICS_BASE: binary
+SEED: 317
+DATA_RELOAD: True
+
+DATASET:
+  type: FakeSFormerSBI
+  DATA_TYPE: image
+  TRAIN: True #Switch to True for training mode, False for testing mode
+  COMPRESSION: c0
+  IMAGE_SUFFIX: png
+  NUM_WORKERS: 7
+  PIN_MEMORY: True
+  IMAGE_SIZE: [112, 112]
+  HEATMAP_SIZE: [14, 14] #[IMAGE_SIZE//4, IMAGE_SIZE//4]
+  SIGMA: 1
+  ADAPTIVE_SIGMA: False
+  HEATMAP_TYPE: gaussian
+  SPLIT_IMAGE: False
+  DATA:
+    TYPE: frames
+    SAMPLES_PER_VIDEO: 
+      ACTIVE: True
+      TRAIN: 8 # Dynamically random number of frames in each epoch
+      VAL: 8
+      TEST: 32
+      DIST: [1., 1.] # Distribution of Real, Fake - 1.,1. by default
+    TRAIN:
+      NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c0/
+      FROM_FILE: True
+      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # ANNO_FILE: train/frames/FaceXRay/train_FF_FaceXRay.json
+      ANNO_FILE: processed_data/c0/train_81_FF++_processed.json
+      LABEL_FOLDER: [real, fake]
+    VAL:
+      NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      ROOT: /project/home/p200249/XXX/FaceForensics++/c0/
+      FROM_FILE: True
+      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures] # Choosing Deepfake techniques to be loaded for dataloader
+      # ANNO_FILE: val/frames/FaceXRay/val_FF_FaceXRay.json
+      ANNO_FILE: processed_data/c0/val_81_FF++_processed.json
+      LABEL_FOLDER: [real, fake]
+    TEST:
+      NAME: DFD
+      # ROOT: /home/users/XXX/data/FaceForensics++/c0/
+      # ROOT: /project/home/p200249/XXX/FaceForensics++/c0/
+      # ROOT: /project/home/p200249/XXX/FaceForensics++/c23/
+      # ROOT: /home/users/XXX/data/Celeb-DFv1/
+      # ROOT: /project/home/p200249/XXX/Celeb-DFv1/
+      # ROOT: /data/deepfake_cluster/datasets_df/Celeb-DFv1/
+      # ROOT: /home/users/XXX/data/Celeb-DFv2/
+      # ROOT: /project/home/p200249/XXX/Celeb-DFv2/
+      # ROOT: /home/users/XXX/data/DFDCP/
+      # ROOT: /project/home/p200249/XXX/DFDCP/
+      # ROOT: /home/users/XXX/data/DFDC/
+      # ROOT: /project/home/p200249/XXX/DFDC/
+      # ROOT: /home/users/XXX/data/DFD/
+      ROOT: /project/home/p200249/XXX/DFD/
+      # ROOT: /home/users/XXX/data/DFW/
+      # ROOT: /project/home/p200249/XXX/DFW/
+      # ROOT: /project/home/p200249/XXX/DF40_test/
+      # ROOT: /project/home/p200249/XXX/DiffSwap/
+      # ROOT: /home/users/XXX/data/Combine/
+      FROM_FILE: False
+      # FAKETYPE: [original, Deepfakes]
+      # FAKETYPE: [original, Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # FAKETYPE: [original_pixel_random, Deepfakes_pixel_random, Face2Face_pixel_random, FaceSwap_pixel_random, NeuralTextures_pixel_random]
+      # FAKETYPE: [frames_JPEG_1/original, frames_JPEG_1/Deepfakes, frames_JPEG_1/Face2Face, frames_JPEG_1/FaceSwap, frames_JPEG_1/NeuralTextures, 
+      #           frames_JPEG_2/original, frames_JPEG_2/Deepfakes, frames_JPEG_2/Face2Face, frames_JPEG_2/FaceSwap, frames_JPEG_2/NeuralTextures,
+      #           frames_JPEG_3/original, frames_JPEG_3/Deepfakes, frames_JPEG_3/Face2Face, frames_JPEG_3/FaceSwap, frames_JPEG_3/NeuralTextures,
+      #           frames_JPEG_4/original, frames_JPEG_4/Deepfakes, frames_JPEG_4/Face2Face, frames_JPEG_4/FaceSwap, frames_JPEG_4/NeuralTextures,
+      #           frames_JPEG_5/original, frames_JPEG_5/Deepfakes, frames_JPEG_5/Face2Face, frames_JPEG_5/FaceSwap, frames_JPEG_5/NeuralTextures]
+      # FAKETYPE: [Celeb-real-0.97-1.0-v2, Celeb-synthesis-0.97-1.0-v2, YouTube-real]
+      # FAKETYPE: [Celeb-real, Celeb-synthesis, YouTube-real]
+      # FAKETYPE: [method_A, method_B, original_videos]
+      # FAKETYPE: [fake, real]
+      FAKETYPE: [DeepFakeDetection_original, DeepFakeDetection]
+      # FAKETYPE: [fake_test, real_test]
+      # FAKETYPE: [blendface, danet, deepfacelab, e4e, e4s, facedancer, faceswap, facevid2vid, fomm, fsgan, heygen, 
+      # hyperreenact, inswap, lia, mcnet, mobileswap, MRAA, one_shot_free, pirender, sadtalker, simswap, tpsm, uniface, 
+      # wav2lip, real_videos]
+      # FAKETYPE: [Real_DiffSwap1, DiffSwap_1]
+      # FAKETYPE: [Celeb_DFv1-real, Celeb_DFv2-real, DeepFakeDetection, Deepfakes, FaceSwap, method_A, NeuralTextures, 
+      # original_videos, YouTube_DFv1-real, Celeb_DFv1-synthesis, Celeb_DFv2-synthesis, DeepFakeDetection_original, Face2Face, 
+      # fake_test, method_B, original, real_test, YouTube_DFv2-real]
+      # FAKETYPE: [fomm, real_videos]
+      ANNO_FILE: FaceXRay/test/test_FF_Xray.json
+      LABEL_FOLDER: [real, fake]
+  TRANSFORM:
+    geometry:
+      type: GeometryTransform
+      resize: [112, 112, 0] #h, w, p=probability. If no affine transform, set p=1
+      normalize: 0
+      horizontal_flip: 0.5
+      cropping: [0.15, 0.5] #Format: [crop_limit, prob]
+      scale: [0.15, 0.5] #Format: [scale_limit, prob]
+      rand_erasing: [0.0, 1] #Format: [p, max_count]
+    color:
+      type: ColorJitterTransform
+      clahe: 0.0
+      colorjitter: 0.3
+      gaussianblur: 0.3
+      gaussnoise: 0.3
+      jpegcompression: [0.5, 40, 100] # prob, lower and upper quality respectively
+      rgbshift: 0.3
+      randomcontrast: 0.0
+      randomgamma: 0.5
+      randombrightness: 1
+      huesat: 1
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+  DEBUG: False
+  DYNAMIC_FXRAY: True
+  DYNAMIC_BLENDING_PROB: False
+  TARGET_OVERLAP: True
+
+MODEL:
+  type: TopDownDetector
+  backbone:
+    type: ViT
+    img_size: [112, 112]
+    patch_size: 8
+    embed_dim: 384
+    depth: 12
+    num_heads: 6
+    mlp_ratio: 4
+    drop_path_rate: 0.2
+    qkv_bias: True
+    class_token: True
+  keypoint_head:
+    type: TopdownHeatmapSimpleHead
+    in_channels: 384
+    heads:
+      hm: 1
+      cls: 1
+    num_deconv_layers: 0 #Config n deconv layers to build the decoder
+    num_deconv_filters: [256]
+    num_deconv_kernels: [4]
+    loss_keypoint: 
+        type: JointsMSELoss 
+        use_target_weight: False
+    extra: 
+      final_conv_kernel: 3
+      num_conv_layers: 1
+    # conv_2direction: False
+    # features: 2D
+  INIT_WEIGHTS:
+      pretrained: pretrained/dino_deitsmall8_pretrain.pth
+
+TRAIN:
+  gpus: [0,1,2,3]
+  batch_size: 32
+  lr: 0.0005
+  epochs: 100
+  begin_epoch: -1
+  warm_up: 5
+  every_val_epochs: 1
+  accumulation_steps: 1
+  use_amp: False
+  loss:
+    # type: CombinedFocalLoss # For L2-Att
+    # use_target_weight: False
+    # cls_lmda: 1
+    # dst_hm_cls_lmda: 0
+    # offset_lmda: 0
+    # hm_lmda: 10
+    # cstency_lmda: 0
+    # mse_reduction: mean
+    # ce_reduction: mean
+    type: BinaryCrossEntropy # For binary only
+    reduction: mean
+  optimizer: AdamW
+  distributed: False
+  pretrained: ''
+  tensorboard: False
+  resume: False
+  lr_scheduler:
+    # type: MultiStepLR
+    milestones: [5, 15, 20, 25]
+    gamma: 0.5
+  freeze_backbone: True
+  debug:
+    active: False
+    save_hm_gt: True
+    save_hm_pred: True
+  booster: 1
+  start_decay: 10
+
+TEST:
+  gpus: [0]
+  subtask: 'eval'
+  test_file: ''
+  vis_hm: True
+  threshold: 0.5
+  flip_test: True
+  video_level: True
+  apr: True # Average precision/recall or normal precision/recall
+  no_shot_preds: 1
+  pred_file: /project/home/p200249/XXX/saved_predictions/FakeFormer_DF40_FOMM_100_100.json # File to save predictions
+  save_preds: False
+  pretrained: logs/30-10-2025/TopDownDetector_ViTSmall112_hm10_8SBI_Overlap100_Focal_AdamW_IN22k_1e3_FZ5_Cutout_abl_model_best.pth
