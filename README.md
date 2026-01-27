@@ -39,7 +39,7 @@ Results on 6 datasets ([CDF2](https://github.com/yuezunli/celeb-deepfakeforensic
 
 
 ## Pre-trained Models
-* 📌 *The pre-trained weights of FakeSTormer can be found [here](https://www.dropbox.com/scl/fo/elk2szqf0du4l6zm5job9/AAdVmNH--6ywHBZGNQJlR5o?rlkey=5kde7vj4wklrx1jwdul0m6g46&st=czw4szw0&dl=0)*
+* 📌 *The pre-trained weights of FakeSTormer can be found [here](https://www.dropbox.com/scl/fo/elk2szqf0du4l6zm5job9/AAdVmNH--6ywHBZGNQJlR5o?rlkey=j8xesf2fu4ahxdw99w5ndrkb2&st=fe6drzpx&dl=0)*
 
 
 ## Docker Build (Optional)
